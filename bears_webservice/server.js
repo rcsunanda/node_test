@@ -103,8 +103,22 @@ router.route('/bears/:bear_id')
             res.json({ message: 'Bear updated!' });
          });
       });
-  });
+  })
+  // delete the bear with this id (accessed at DELETE http://localhost:port/api/bears/:bear_id)
+   .delete(function(req, res) {
+      var bear_id = req.params.bear_id;
+      console.log('In router.route.delete(): received DELETE request to /bears/bear_id. bear_id=' + bear_id);
 
+      Bear.remove({
+         _id: bear_id
+      }, function(err, bear) {
+         if (err) {
+            res.send(err);
+         }
+         console.log('In router.route.delete(): deleted bear');         
+         res.json({ message: 'Successfully deleted' });
+      });
+   });
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
