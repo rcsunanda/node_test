@@ -65,6 +65,44 @@ router.route('/bears')
          }
          res.json(bears);
       });
+  })
+
+// ----------------------------------------------------
+
+router.route('/bears/:bear_id')
+   // get the bear with that id (accessed at GET http://localhost:port/api/bears/:bear_id)
+   .get(function(req, res) {
+      var bear_id = req.params.bear_id;
+      console.log('In router.route.get(): received GET request to /bears/bear_id. bear_id=' + bear_id);
+      Bear.findById(bear_id, function(err, bear) {
+         if (err) {
+            res.send(err);
+         }
+         console.log('In router.route.get(): retrieved bear');
+         res.json(bear);
+      });
+   })
+   // update the bear with this id (accessed at PUT http://localhost:port/port/bears/:bear_id)
+   .put(function(req, res) {
+      var bear_id = req.params.bear_id;
+      var new_bear_name = req.body.name;
+      console.log('In router.route.put(): received PUT request to /bears/bear_id. bear_id=' + bear_id + ', new_bear_name=' + new_bear_name);
+      // use our bear model to find the bear we want
+      Bear.findById(bear_id, function(err, bear) {
+         if (err) {
+            res.send(err);
+         }
+         bear.name = new_bear_name;  // update the bears info
+
+         // save the bear
+         bear.save(function(err) {
+            if (err) {
+               res.send(err);
+            }
+            console.log('In router.route.put(): updated bear name');
+            res.json({ message: 'Bear updated!' });
+         });
+      });
   });
 
 
