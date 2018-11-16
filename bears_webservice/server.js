@@ -1,4 +1,3 @@
-
 // BASE SETUP
 
 // call the packages we need
@@ -6,6 +5,7 @@ var express    = require('express');   // call express
 var app        = express();   // define our app using express
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
+const path = require('path');
 
 var Bear     = require('./app/models/bear'); // contains Bear schema
 
@@ -16,12 +16,28 @@ app.use(bodyParser.json());
 var port = 10000; // set our port
 var mondodb_url = 'mongodb://localhost:27017/bears';
 
+// =============================================================================
+
+// All ROUTES (static and API) - order is important
+
+var router = express.Router();   // get an instance of the express Router
+
+// Add the dis/my-app folder as a static-file search location
+app.use(express.static(path.join(__dirname, 'dist/my-app')));
+
+// All of our API routes will be prefixed with /api
+app.use('/api', router);
+
+// Catch all other routes and return the index file
+app.get('*', (req, res) => {
+      res.sendFile(path.join(__dirname, 'dist/my-app/index.html'));
+   });
+
 
 // =============================================================================
 
 // ROUTES FOR OUR API
 
-var router = express.Router();   // get an instance of the express Router
 
 // middleware to use for all requests
 router.use(function(req, res, next) {
@@ -121,8 +137,7 @@ router.route('/bears/:bear_id')
    });
 
 // REGISTER OUR ROUTES -------------------------------
-// all of our routes will be prefixed with /api
-app.use('/api', router);
+
 
 
 // =============================================================================
